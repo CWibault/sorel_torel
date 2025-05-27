@@ -21,7 +21,7 @@ Running SOReL on Gymnax/Brax Datasets:
 # TOReL
 TOReL automatically saves each trained policy during hyperparameter sweeps.
 
-Note: TOReL algorithms are not compatible with Gymnax, as Unifloral restricts actions to continuous values in [-1, 1].
+Note: TOReL (as applied here) is not compatible with Gymnax, as Unifloral restricts actions to continuous values in [-1, 1].
 
 Policies are saved to: torel/runs/{orl_algo}/{dataset_name}/{seed}(/{n_value})/{hyperparameter_combination}_actor.pkl. 
 
