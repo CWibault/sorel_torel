@@ -1,62 +1,75 @@
-Two dev folders exist, due to different compatibilities between brax and D4RL. 
+Two development folders exist due to different compatibility requirements between Brax and D4RL environments.
 
---- SOReL --- 
+# SOReL
 
-For SOReL, we do not automatically save each policy trained during hyperparameter sweeps, as we sweep over too large a hyperparameter space. 
+SOReL does not automatically save each policy trained during hyperparameter sweeps, as the hyperparameter space is large.
 
-SOReL on gymnax/brax datasets: 
-    1. Build the docker image using: cd brax_dev, cd.., bash build.sh 
-    2. Launch the docker container using: cd.., bash d4rl_launch_container.sh 0 # (if launching on GPU 0, for example, otherwise just bash d4rl_launch_container.sh)
-    3. Train the posterior (world model and approximate inference) using:
-        python3.9 -m sorel.fit_posterior
-        The posterior model will be saved in sorel/runs/{dataset_name}/{seed}/{n_value}
-    4. Sweep over the hyperparameters of the bamdp solver (here we implement PPO_RNN)
-        wandb sweep sorel/configs/solve_bamdp.yaml 
-        Use wandb to choose the hyperparameters with the lowest approximate regret. 
-    5. Run python3.10 -m sorel.solve_bamdp with the chosen hyperparameters to save the actor.
+Running SOReL on Gymnax/Brax Datasets:
+1. Build the Docker image:
+   ```python
+   cd brax_dev
+   bash build.sh
+2. Launch the Docker container:
+   ```python
+    cd ..
+    bash brax_launch_container.sh 0  # If using GPU 0 
+3.	Train the posterior (world model and inference): ```python3.10 -m sorel.fit_posterior```.
+   The posterior will be saved to: sorel/runs/{dataset_name}/{seed}/{n_value}.
+4.	Run a hyperparameter sweep over the BAMPD solver (PPO_RNN): ```wandb sweep sorel/configs/solve_bamdp.yaml```.
+5.	Train and save the actor using the hyperparameter configuration that yields the lowest approximate regret:```python3.10 -m sorel.solve_bamdp```.
 
+# TOReL
+TOReL automatically saves each trained policy during hyperparameter sweeps.
 
---- TOReL --- 
+Note: TOReL algorithms are not compatible with Gymnax, as Unifloral restricts actions to continuous values in [-1, 1].
 
-For TOReL, we automatically save each policy trained during hyperparameter sweeps. 
-Currently, the TOReL algorithms are not compatible with gymnax (unifloral's implementation clips actions between -1 and 1, and only handles continuous action spaces)
-The policies are saved as torel/runs/{orl_algo}/{dataset_name}/{seed}(/{n_value})/{hyperparameter_combination}_actor.pkl
+Policies are saved to: torel/runs/{orl_algo}/{dataset_name}/{seed}(/{n_value})/{hyperparameter_combination}_actor.pkl. 
 
-TOReL on brax datasets: 
-    1. Build the docker image using: cd brax_dev, cd.., bash build.sh 
-    2. Launch the docker container using: cd.., bash brax_launch_container.sh 0 # (if launching on GPU 0, for example, otherwise just bash d4rl_launch_container.sh)
-    3. Train the torel environment for calculating the regret metric using: 
-        python3.9 -m torel.fit_posterior
-        The posterior model will be saved in torel/runs/torel/{dataset_name}/{seed}/{n_value}
-    4. Sweep over the hyperparameters of the desired ORL algorithm using wandb
-        e.g. wandb sweep torel/d4rl_configs/rebrac.yaml (different config folders and files for brax and D4RL - brax requires python3.10 and D4RL python3.9)
-        Use wandb to choose the hyperparameters with the lowest regret metric value.  
-    5. To run the sample efficiency experiment, tune online using unifloral:
-        run python3.10 -m torel.unifloral_online_tuning to save a dictionary containing (among other values) the number of online samples required ("samples"), the regret with each online sample ("estimated_bests_mean"), and the 95th percentile confidence bound ("estimated_bests_ci_low" to "estimated_bests_ci_hight").
-        The dictionary will be saved in torel/runs/torel/{dataset_name}/{seed}/{n_value}
+Running TOReL on Brax Datasets:
+1.	Build the Docker image:
+	```python
+    cd brax_dev
+    bash build.sh
+2.	Launch the Docker container:
+    ```python
+  	cd ..
+    bash brax_launch_container.sh 0  # If using GPU 0
+3.	Train the TOReL posterior environment:```python3.10 -m torel.fit_posterior```.
+    The posterior will be saved to: torel/runs/torel/{dataset_name}/{seed}/{n_value}.
+4.	Sweep over ORL algorithm hyperparameters:```wandb sweep torel/brax_configs/rebrac.yaml```. 
+  	(We use different config folders, as we require Python 3.10 for Brax and 3.9 for D4RL).
+5.	Run the sample-efficiency experiment:```python3.10 -m torel.unifloral_online_tuning```.
+    This will save a dictionary including the following items to the path torel/runs/torel/{dataset_name}/{seed}/{n_value}:
+  	- "samples": number of online steps
+    - "estimated_bests_mean": regret at each step
+    - "estimated_bests_ci_low", "estimated_bests_ci_high": 95% confidence bounds.
 
-TOReL on D4RL datasets: 
-    1. Build the docker image using: cd d4rl_dev, bash build.sh 
-    2. Launch the docker container using: cd.., bash d4rl_launch_container.sh 0 # (if launching on GPU 0, otherwise just bash d4rl_launch_container.sh)
-    3. Train the torel environment for calculating the regret metric using: 
-        python3.9 -m torel.fit_posterior
-        The posterior model will be saved in torel/runs/torel/{dataset_name}/{seed}
-    4. Sweep over the hyperparameters of the desired ORL algorithm using wandb
-        e.g. wandb sweep torel/d4rl_configs/rebrac.yaml (different config folders and files for brax and D4RL - brax requires python3.10 and D4RL python3.9). 
-        Use wandb to choose the hyperparameters with the lowest regret metric value. 
-    5. To run the sample efficiency experiment, tune online using unifloral:
-        run python3.9 -m torel.unifloral_online_tuning to save a dictionary containing (among other values) the number of online samples required ("samples"), the regret with each online sample ("estimated_bests_mean"), and the 95th percentile confidence bound ("estimated_bests_ci_low" to "estimated_bests_ci_hight").
-        The dictionary will be saved in torel/runs/torel/{dataset_name}/{seed}
+Running TOReL on D4RL Datasets:
+1.	Build the Docker image:
+    ```python
+    cd d4rl_dev
+    bash build.sh
+2. Launch the Docker container:
+	```python
+    cd ..
+    bash d4rl_launch_container.sh 0  # If using GPU 0
+3.	Train the TOReL posterior environment:```python3.9 -m torel.fit_posterior```
+    The posterior will be saved to: torel/runs/torel/{dataset_name}/{seed}.
+4.	Sweep over ORL algorithm hyperparameters:```wandb sweep torel/d4rl_configs/rebrac.yaml```.
+    (We use different config folders, as we require Python 3.10 for Brax and 3.9 for D4RL).
+5.	Run the sample-efficiency experiment:```python3.9 -m torel.unifloral_online_tuning```
+    This will save a dictionary including the following items to the path torel/runs/torel/{dataset_name}/{seed}:
+    - "samples": number of online steps
+	- "estimated_bests_mean": regret at each step
+	- "estimated_bests_ci_low", "estimated_bests_ci_high": 95% confidence bounds.
+  	
+# Notes
+- Full-replay Brax datasets should be stored in the datasets/ folder and named to include the task, e.g.: brax-halfcheetah-full-replay. 
+- SOReL can be adapted to work with D4RL datasets as in TOReL, but this is not recommended: SOReL assumes a diverse offline dataset (poor to expert trajectories), which D4RL typically does not provide.
+- All paper plots were generated from results downloaded via Weights & Biases (wandb).
 
---- NB ---
-The diverse brax full-replay datasets should be stored in the datasets folder, and contain the name of the brax task within their description. e.g. "brax-halfcheetah-full-replay". 
-
-The example SOReL code could easily be changed to download the D4RL datasets (like TOReL does). 
-We do not do this, since SOReL, as it is, is unlikely to work with D4RL - since we have not placed a prior on the model, the offline dataset must be diverse, covering poor, medium and expert regions of performance. This is not the case for most D4RL datasets.
-
-The plots in the paper were created by downloading the relevant results from wandb. 
-
-Acknowledgement and thanks to the authors of unifloral, rejax, and purejaxrl: 
-    A Clean Slate for Offline Reinforcement Learning, Matthew Thomas Jackson and Uljad Berdica and Jarek Liesen and Shimon Whiteson and Jakob Nicolaus Foerster, 2025, https://arxiv.org/abs/2504.11453
-    rejax, Liesen, Jarek and Lu, Chris and Lange, Robert, 2024, https://github.com/keraJLi/rejax
-    Discovered policy optimisation, Lu, Chris and Kuba, Jakub and Letcher, Alistair and Metz, Luke and Schroeder de Witt, Christian and Foerster, Jakob, 2022, https://github.com/luchris429/purejaxrl
+# Acknowledgements
+We gratefully build on the following works:
+- A Clean Slate for Offline Reinforcement Learning; Matthew T. Jackson, Uljad Berdica, Jarek Liesen, Shimon Whiteson, Jakob N. Foerster (2025); https://arxiv.org/abs/2504.11453.
+- rejax; Jarek Liesen, Chris Lu, Robert Lange (2024); https://github.com/keraJLi/rejax.
+- purejaxrl; Chris Lu, Jakub Kuba, Alistair Letcher, Luke Metz, Christian Schroeder de Witt, Jakob Foerster (2022); https://github.com/luchris429/purejaxrl.
