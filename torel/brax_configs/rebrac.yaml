@@ -1,0 +1,69 @@
+command:
+  - python3.10
+  - ${program}
+  - ${args_no_boolean_flags}
+entity: team
+method: grid
+name: TOReL_ReBRAC
+program: torel/orl_algos/torel_rebrac.py
+
+parameters:
+  # --- logging ---
+  log:
+    value: true
+  wandb_project:
+    value: sorel-torel-test
+  wandb_team:
+    value: team
+  wandb_group:
+    value: group
+
+  # --- run identification ---
+  seed:
+    value: 0
+  algo:
+    value: rebrac
+  num_updates:
+    value: 1_000_000
+
+  # --- environment and offline dataset ---
+  task:
+    value: brax-halfcheetah-full-replay
+  n_value:
+    value: 200000
+  min_reward: 
+    value: -0.5
+  max_reward:
+    value: 3.5
+  discount_factor:
+    value: 0.998
+
+  # --- rebrac ---
+  lr:
+    value: 1e-3
+  batch_size:
+    value: 1024
+  gamma:
+    value: 0.99
+  polyak_step_size:
+    value: 0.005
+  noise_clip:
+    value: 0.5
+  policy_noise:
+    value: 0.2
+  num_critic_updates_per_step:
+    value: 2
+  critic_bc_coef:
+    values: [0, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1]
+  actor_bc_coef:
+    values: [0.0005, 0.001, 0.002, 0.003, 0.03, 0.1, 0.3, 1.0]
+  actor_ln:
+    value: false
+  critic_ln:
+    value: true
+  norm_obs:
+    value: false
+
+  # --- evaluation ---
+  num_eval_workers:
+    value: 20

@@ -1,0 +1,85 @@
+command:
+  - python3.10
+  - ${program}
+  - ${args_no_boolean_flags}
+entity: team
+method: random
+name: SOReL
+program: sorel/solve_bamdp.py
+
+parameters:
+  # --- Logging ---
+  debug:
+    value: true
+  log:
+    value: true
+  collect_dataset:
+    value: false
+  save_actor:
+    value: false
+  wandb_project:
+    value: "sorel-torel-test"
+  wandb_team:
+    value: "team"
+  wandb_group:
+    value: "group"
+
+  # --- run identification ---
+  seed:
+    value: 1
+  algo:
+    value: bamdp_solver
+
+  # --- environment and offline dataset ---
+  task:
+    value: brax-halfcheetah-full-replay
+  n_value:
+    value: 200000
+  discount_factor:
+    value: 0.998
+  min_reward: 
+    value: -0.5
+  max_reward:
+    value: 3.5
+
+  # --- ppo-rnn ---
+  rnn_size:
+    value: 256
+  layer_size:
+    value: 256
+  activation:
+    value: tanh
+  num_envs:
+    values: [256, 512]
+  num_steps:
+    values: [32, 64, 128]
+  total_timesteps:
+    value: 50000000
+  update_epochs:
+    values: [2, 4, 8]
+  num_minibatches:
+    values: [2, 4, 8, 16]
+  gamma:
+    values: [0.99, 0.995, 0.998]
+  gae_lambda:
+    values: [0.8, 0.9, 0.95]
+  clip_eps:
+    values: [0.2, 0.3]
+  ent_coef:
+    values: [0.0, 0.001, 0.01]
+  vf_coef:
+    value: 0.5
+  max_grad_norm:
+    values: [0.5, 1.0]
+  lr:
+    values: [0.0001, 0.0003]
+  anneal_lr:
+    value: true
+  burn_in_pct:
+    value: 0.25
+
+  # --- Evaluation ---
+  eval_frequency:
+    value: 100
+  num_eval_workers:
+    value: 10

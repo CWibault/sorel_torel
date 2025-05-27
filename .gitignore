@@ -1,0 +1,6 @@
+runs/
+wandb/
+datasets/*.npz
+wandb_key
+Dockerfile
+__pycache__/

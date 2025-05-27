@@ -1,0 +1,59 @@
+command:
+  - python3.9
+  - ${program}
+  - ${args_no_boolean_flags}
+entity: team
+method: grid
+name: TOReL_IQL
+program: torel/orl_algos/torel_iql.py
+
+parameters:
+  # --- logging ---
+  log:
+    value: true
+  wandb_project:
+    value: sorel-torel-test
+  wandb_team:
+    value: team
+  wandb_group:
+    value: group
+
+  # --- run identification ---
+  seed:
+    value: 0
+  algo:
+    value: iql
+  num_updates:
+    value: 1_000_000
+
+  # --- environment and offline dataset ---
+  task:
+    value: d4rl-halfcheetah-medium-expert-v2
+  n_value:
+    value: 200000
+  min_reward: 
+    value: 0
+  max_reward:
+    value: 3.5
+  discount_factor:
+    value: 0.998
+
+  # --- iql ---
+  lr:
+    value: 0.0003
+  batch_size:
+    value: 256
+  gamma:
+    value: 0.99
+  polyak_step_size:
+    value: 0.005
+  beta:
+    values: [0.5, 3.0, 10.0]
+  iql_tau:
+    values: [0.5, 0.7, 0.9]
+  exp_adv_clip:
+    value: 100.0
+
+  # --- evaluation ---
+  num_eval_workers:
+    value: 20

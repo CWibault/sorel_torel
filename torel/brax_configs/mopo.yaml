@@ -1,0 +1,67 @@
+command:
+  - python3.10
+  - ${program}
+  - ${args_no_boolean_flags}
+entity: team
+method: grid
+name: TOReL_MOPO
+program: torel/orl_algos/torel_mopo.py
+
+parameters:
+  # --- logging ---
+  log:
+    value: true
+  wandb_project:
+    value: sorel-torel-test
+  wandb_team:
+    value: team
+  wandb_group:
+    value: group
+
+  # --- run identification ---
+  seed:
+    value: 0
+  algo:
+    value: mopo
+  num_updates:
+    value: 3_000_000
+
+  # --- environment and offline dataset ---
+  task:
+    value: brax-halfcheetah-full-replay
+  n_value:
+    value: 200000
+  min_reward: 
+    value: -0.5
+  max_reward:
+    value: 3.5
+  discount_factor:
+    value: 0.998
+
+  # --- mopo ---
+  lr:
+    value: 1e-4
+  batch_size:
+    value: 256
+  gamma:
+    value: 0.99
+  polyak_step_size:
+    value: 0.005
+  model_retain_epochs:
+    value: 5
+  num_critics:
+    value: 10
+  rollout_batch_size:
+    value: 50000
+  rollout_interval:
+    value: 1000
+  rollout_length:
+    values: [1, 3, 5]
+  dataset_sample_ratio:
+    value: 0.05
+  step_penalty_coef:
+    values: [1.0, 5.0]
+
+  # --- evaluation ---
+  num_eval_workers:
+    value: 20
